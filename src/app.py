@@ -167,19 +167,6 @@ def handle_login():
 def create_muestra():
     data = request.json
 
-    # Obtener el user_id del cuerpo de la solicitud
-    user_id = data.get('user_id')
-
-    # Verificar si se proporcion√≥ un user_id v√°lido
-    if user_id is None:
-        return jsonify({'message': 'El campo user_id es requerido'}), 400
-
-    # Verificar si el usuario existe en la base de datos
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({'message': 'El usuario no existe'}), 404
-
-    # Crear la nueva muestra asociada al usuario
     muestra = Muestra(
         user=user,  # Asignar directamente el objeto user en lugar de user_id
         project_name=data['project_name'],
@@ -191,41 +178,22 @@ def create_muestra():
         image_specimen=data['image_specimen'],
         aditional_comments=data['aditional_comments']
     )
-
     db.session.add(muestra)
     db.session.commit()
-
     return jsonify({'message': 'Muestra creada correctamente'})
-
-#Delete usuario por id
-@app.route('/user/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    # Buscar el usuario por su ID
-    user = User.query.get(user_id)
-
-    if user is None:
-        return jsonify({'message': 'Usuario no encontrado'}), 404
-
-    # Eliminar el usuario de la base de datos
-    db.session.delete(user)
-    db.session.commit()
-
-    return jsonify({'message': 'Usuario eliminado correctamente'})
 
 #Delete muestra por id
 @app.route('/muestra/<int:muestra_id>', methods=['DELETE'])
 def delete_muestra(muestra_id):
     # Buscar la muestra por su ID
     muestra = Muestra.query.get(muestra_id)
-
     if muestra is None:
         return jsonify({'message': 'Muestra no encontrada'}), 404
-
     # Eliminar la muestra de la base de datos
     db.session.delete(muestra)
     db.session.commit()
-
     return jsonify({'message': 'Muestra eliminada correctamente'})
+
 
 
 # this only runs if `$ python src/main.py` is executed

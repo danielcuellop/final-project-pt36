@@ -8,9 +8,12 @@ class User(db.Model):
     last_name = db.Column(db.String(120), nullable=False)
     rut = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    rol = db.Column(db.String(20), nullable=False)
-    password = db.Column(db.String(8000), nullable=False)
+    rol =  db.Column(db.String(20), unique=False, nullable=False)
+    password = db.Column(db.String(200), unique=False, nullable=False)
+
     muestras = db.relationship('Muestra', backref='user', lazy=True)
+    
+
     def __repr__(self):
         return f'<User {self.name}>'
     def serialize(self):
