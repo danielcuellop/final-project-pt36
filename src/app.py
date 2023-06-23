@@ -58,12 +58,19 @@ def encode_auth_token(user_id):
 #Function to decode a token
 def decode_auth_token(auth_token):
     try:
+<<<<<<< HEAD
         payload = jwt.decode(auth_token, app.config['JWT_SECRET_KEY'], algorithm='HS256')
+=======
+        jwt_secret_key = app.config['JWT_SECRET_KEY']
+        payload = jwt.decode(auth_token, jwt_secret_key, algorithms=['HS256'])
+>>>>>>> 2182a21 (push 22/06 Login)
         return payload['sub']
     except jwt.ExpiredSignatureError:
-        return 'Token expired. Please log again'
+# The token has expired
+        return 'Token expired. Please log in again.'
     except jwt.InvalidTokenError:
-        return 'Invalid token. Please log again'
+# The token is invalid
+        return 'Invalid token. Please log in again.'
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
@@ -222,7 +229,23 @@ def delete_muestra(muestra_id):
     return jsonify({'message': 'Muestra eliminada correctamente'})
 
 
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    auth_header = request.headers.get('Authorization')
 
+    if auth_header:
+        auth_token = auth_header.split(" ")[1]
+    else:
+        return jsonify(message='token missing'), 401
+
+    # Decodificar el token
+    user_id = decode_auth_token(auth_token)
+
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify(message='User not found'), 404
+
+    return jsonify(message=user.serialize())
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

@@ -12,8 +12,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					title: "SECOND",
 					background: "white",
 					initial: "white"
-				}, 
+				},
 			],
+<<<<<<< HEAD
 			authToken: null,
 
 			users: []
@@ -21,8 +22,46 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 
 
+=======
+			user: [],
+			authToken: null,
+>>>>>>> 2182a21 (push 22/06 Login)
 		},
 		actions: {
+
+			login: async ({ email, password, navigate }) => {
+				try {
+					const response = await fetch(
+						"http://localhost:3001/login",
+						{
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify({
+								email: email,
+								password: password
+							}),
+						}
+					);
+					if (response.ok) {
+						const data = await response.json()
+						setStore({ authToken: data.auth_token });
+						//navigate("/dashboard")
+						return true
+					}
+				} catch (error) {
+					console.log(error);
+				};
+				return false
+			},
+
+
+
+
+
+
+
 			// Use getActions to call a function within a fuction
 
 			login: async ({email, password, navigate}) => {
@@ -82,14 +121,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			getMessage: async () => {
-				try{
+				try {
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves
 					return data;
-				}catch(error){
+				} catch (error) {
 					console.log("Error loading message from backend", error)
 				}
 			},
