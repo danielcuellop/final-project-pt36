@@ -58,18 +58,12 @@ def encode_auth_token(user_id):
 #Function to decode a token
 def decode_auth_token(auth_token):
     try:
-<<<<<<< HEAD
-        payload = jwt.decode(auth_token, app.config['JWT_SECRET_KEY'], algorithm='HS256')
-=======
         jwt_secret_key = app.config['JWT_SECRET_KEY']
-        payload = jwt.decode(auth_token, jwt_secret_key, algorithms=['HS256'])
->>>>>>> 2182a21 (push 22/06 Login)
+        payload = jwt.decode(auth_token, jwt_secret_key, algorithm='HS256')
         return payload['sub']
     except jwt.ExpiredSignatureError:
-# The token has expired
         return 'Token expired. Please log in again.'
     except jwt.InvalidTokenError:
-# The token is invalid
         return 'Invalid token. Please log in again.'
 
 # Add all endpoints form the API with a "api" prefix
@@ -97,7 +91,6 @@ def serve_any_other_file(path):
     return response
 
 @app.route('/user', methods=['GET'])
-
 
 def handle_hello():
 
@@ -169,23 +162,6 @@ def handle_login():
        return jsonify(auth_token=auth_token)
    else:
        return jsonify(message='Wrong credentials'), 401
-
-
-@app.route('/dashboard', methods=['GET'])
-def dashboard():
-
-    auth_header = request.headers.get('Authorization')
-    if auth_header:
-        auth_token = auth_header.split(" ")[1]
-    else:
-        return jsonify(message= 'User not found'), 401
-    
-    #Decode the token
-    response = decode_auth_token(auth_token)
-  
-
-    return jsonify(message= response) 
-
 
    
 @app.route('/muestra', methods=['POST'])
