@@ -14,18 +14,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					initial: "white"
 				},
 			],
-<<<<<<< HEAD
-			authToken: null,
-
-			users: []
-
-
-
-
-=======
 			user: [],
-			authToken: null,
->>>>>>> 2182a21 (push 22/06 Login)
+			authToken: null
 		},
 		actions: {
 
@@ -64,50 +54,50 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			// Use getActions to call a function within a fuction
 
-			login: async ({email, password, navigate}) => {
+			login: async ({ email, password, navigate }) => {
 				try {
 					const response = await fetch(
-					  "https://manolos05-ideal-xylophone-7q55p7xj9jgcp9g6-3001.preview.app.github.dev/login",
-					  {
-						method: "POST",
-						headers: {
-						  "Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							email: email,
-							password: password
-						}),
-					  }
+						"http://localhost:3001/login",
+						{
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify({
+								email: email,
+								password: password
+							}),
+						}
 					);
-					if (response.ok){
+					if (response.ok) {
 						const data = await response.json()
-						setStore({authToken: data.auth_token});
+						setStore({ authToken: data.auth_token });
 						navigate("/dashboard")
 						return true
 					}
-				  } catch (error) {
+				} catch (error) {
 					console.log(error);
-				  };
-			
+				};
+
 			},
 
-			getUser: async()=>{
+			getUser: async () => {
 				const store = getStore()
-				try{
-					const response = await fetch("https://manolos05-ideal-xylophone-7q55p7xj9jgcp9g6-3001.preview.app.github.dev/user", {
-						headers: {Authorization:  `Bearer ${store.authToken}`}
-					  });
-					if (response.ok){
+				try {
+					const response = await fetch("http://localhost:3001/user", {
+						headers: { Authorization: `Bearer ${store.authToken}` }
+					});
+					if (response.ok) {
 						const data = await response.json();
-						setStore({users: data.users})
+						setStore({ users: data.users })
 					}
 				}
-				catch(error){
+				catch (error) {
 					console.log(error)
 				}
 			},
 
-	
+
 
 
 
@@ -142,7 +132,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (i === index) elm.background = color;
 					return elm;
 				});
-				token: 
+				token:
 
 				//reset the global store
 				setStore({ demo: demo });

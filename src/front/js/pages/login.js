@@ -12,26 +12,14 @@ export const Login = () => {
         password: ""
     })
 
-<<<<<<< HEAD
-    const [error, setError]= useState("");
-=======
     const [error, setError] = useState("");
 
     const { email, password } = inputValues;
     const navigate = useNavigate()
->>>>>>> 2182a21 (push 22/06 Login)
 
-    const {email, password} = inputValues;
-    const navigate = useNavigate()
-    
     const loginUserRequest = async () => {
-<<<<<<< HEAD
-        actions.login({email, password, navigate})
-        }
-=======
         actions.login({ email, password, navigate })
     }
->>>>>>> 2182a21 (push 22/06 Login)
     return (
         <section className="vh-100" style={{ backgroundColor: "green" }} >
             <div className="container py-5 h-100">
@@ -56,11 +44,7 @@ export const Login = () => {
                                             <h5 className="fw-normal mb-3 pb-3" style={{ letterSpacing: "1px" }}>Sign into your account</h5>
 
                                             <div className="form-outline mb-4">
-<<<<<<< HEAD
-                                                <input type="email" id="form2Example17" className="form-control form-control-lg" name="email" value={email} onChange={handleInputChange}/>
-=======
                                                 <input type="email" id="form2Example17" className="form-control form-control-lg" name="email" value={email} onChange={handleInputChange} />
->>>>>>> 2182a21 (push 22/06 Login)
                                                 <label className="form-label" for="form2Example17" >Email address</label>
                                             </div>
 
@@ -68,11 +52,7 @@ export const Login = () => {
                                                 <input type="password" id="form2Example27" className="form-control form-control-lg" name="password" value={password} onChange={handleInputChange} />
                                                 <label className="form-label" for="form2Example27" >Password</label>
                                             </div>
-<<<<<<< HEAD
-                                            {error !== "" && <div>{error}</div> }
-=======
                                             {error !== "" && <div>{error}</div>}
->>>>>>> 2182a21 (push 22/06 Login)
                                             <div className="pt-1 mb-4">
                                                 <button className="btn btn-dark btn-lg btn-block" type="button" onClick={loginUserRequest}>Login</button>
                                             </div>
@@ -97,7 +77,6 @@ export const Login = () => {
                     </div>
                 </div>
             </div>
-            
         </section>
     )
 
