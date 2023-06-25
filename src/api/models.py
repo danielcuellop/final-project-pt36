@@ -57,7 +57,7 @@ class Muestra(db.Model):
 class Proyecto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
-    direccion = db.Column(db.String(120), unique=False, nullable=False)
+    direction = db.Column(db.String(120), unique=False, nullable=False)
     muestras = db.relationship('Muestra', backref='proyecto', lazy=True)
 
     def __repr__(self):
@@ -67,5 +67,5 @@ class Proyecto(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "direccion": self.direccion
+            "direction": self.direction
         }
