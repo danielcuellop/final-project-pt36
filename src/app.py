@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Muestra
+from api.models import db, User, Muestra, Proyecto
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -109,6 +109,8 @@ def handle_hello():
     user_list = [user.serialize() for user in users]
     return jsonify(users= user_list)
 
+
+#GET Users por Mail
 @app.route('/user/<string:email>', methods=['GET'])
 def get_user_by_email(email):
     user = User.query.filter_by(email=email).first()
@@ -117,11 +119,31 @@ def get_user_by_email(email):
 
     return jsonify(user.serialize())
 
+#GET muestras
 @app.route('/muestra', methods=['GET'])
 def get_muestra():
     muestras = Muestra.query.all()    
     result = list(map(lambda muestr:muestr.serialize(),muestras))
     return jsonify(result)
+
+#GET Proyectos por ID
+@app.route('/proyecto/<int:proyecto_id>', methods=['GET'])
+def get_proyecto(proyecto_id):
+    proyecto = Proyecto.query.get(proyecto_id)
+
+    if proyecto is None:
+        return jsonify({'message': 'Proyecto no encontrado'}), 404
+
+    return jsonify(proyecto.serialize()), 200
+
+
+#GET de todos los proyectos
+@app.route('/proyectos', methods=['GET'])
+def get_proyectos():
+    proyectos = Proyecto.query.all()
+    proyectos_serializados = [proyecto.serialize() for proyecto in proyectos]
+
+    return jsonify(proyectos_serializados), 200
 
 
 @app.route('/signup', methods=['POST'])
@@ -173,8 +195,9 @@ def handle_login():
 @app.route('/muestra', methods=['POST'])
 def create_muestra():
     data = request.json
-    # Obtener el user_id del cuerpo de la solicitud
+    # Obtener el user_id y proyecto_id del cuerpo de la solicitud
     user_id = data.get('user_id')
+    proyecto_id = data.get('proyecto_id')
     # Verificar si se proporcionó un user_id válido
     if user_id is None:
         return jsonify({'message': 'El campo user_id es requerido'}), 400
@@ -182,9 +205,17 @@ def create_muestra():
     user = User.query.get(user_id)
     if user is None:
         return jsonify({'message': 'El usuario no existe'}), 404
-    # Crear la nueva muestra asociada al usuario
+    # Verificar si se proporcionó un proyecto_id válido
+    if proyecto_id is None:
+        return jsonify({'message': 'El campo proyecto_id es requerido'}), 400
+    # Verificar si el proyecto existe en la base de datos
+    proyecto = Proyecto.query.get(proyecto_id)
+    if proyecto is None:
+        return jsonify({'message': 'El proyecto no existe'}), 404
+    # Crear la nueva muestra asociada al usuario y al proyecto
     muestra = Muestra(
-        user=user,  # Asignar directamente el objeto user en lugar de user_id
+        user=user,
+        proyecto=proyecto,
         project_name=data['project_name'],
         ubication=data['ubication'],
         ubication_image=data['ubication_image'],
@@ -197,6 +228,24 @@ def create_muestra():
     db.session.add(muestra)
     db.session.commit()
     return jsonify({'message': 'Muestra creada correctamente'})
+
+
+
+#Post Proyecto
+@app.route('/proyecto', methods=['POST'])
+def create_proyecto():
+    data = request.get_json()
+
+    name = data.get('name')
+    direction = data.get('direction')
+
+    proyecto = Proyecto(name=name, direction=direction)
+    db.session.add(proyecto)
+    db.session.commit()
+
+    return jsonify({'message': 'Proyecto creado exitosamente', 'proyecto': proyecto.serialize()}), 201
+
+
 
 #Delete muestra por id
 @app.route('/muestra/<int:muestra_id>', methods=['DELETE'])
