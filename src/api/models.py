@@ -10,7 +10,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     rol =  db.Column(db.String(20), unique=False, nullable=False)
     password = db.Column(db.String(200), unique=False, nullable=False)
-
+    proyectos = db.relationship('Proyecto', backref='user', lazy=True)
     muestras = db.relationship('Muestra', backref='user', lazy=True)
     
 
@@ -59,6 +59,7 @@ class Proyecto(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     direction = db.Column(db.String(120), unique=False, nullable=False)
     muestras = db.relationship('Muestra', backref='proyecto', lazy=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return '<Proyecto %r>' % self.name
@@ -67,5 +68,6 @@ class Proyecto(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "direction": self.direction
+            "direction": self.direction,
+            "user_id": self.user_id
         }
