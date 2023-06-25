@@ -146,6 +146,8 @@ def get_proyectos():
     return jsonify(proyectos_serializados), 200
 
 
+
+#CREAR NUEVO USUARIO
 @app.route('/signup', methods=['POST'])
 def create_user():
     data = request.json
@@ -230,21 +232,28 @@ def create_muestra():
     return jsonify({'message': 'Muestra creada correctamente'})
 
 
-
-#Post Proyecto
 @app.route('/proyecto', methods=['POST'])
 def create_proyecto():
     data = request.get_json()
 
     name = data.get('name')
     direction = data.get('direction')
+    user_id = data.get('user_id')  # Obtener el user_id del cuerpo de la solicitud
 
-    proyecto = Proyecto(name=name, direction=direction)
+    # Verificar si se proporcionó un user_id válido
+    if user_id is None:
+        return jsonify({'message': 'El campo user_id es requerido'}), 400
+
+    # Verificar si el usuario existe en la base de datos
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({'message': 'El usuario no existe'}), 404
+
+    proyecto = Proyecto(name=name, direction=direction, user_id=user_id)
     db.session.add(proyecto)
     db.session.commit()
 
     return jsonify({'message': 'Proyecto creado exitosamente', 'proyecto': proyecto.serialize()}), 201
-
 
 
 #Delete muestra por id
@@ -269,6 +278,19 @@ def delete_all_users():
     
     return jsonify({'message': 'All users deleted'}), 200
 
+@app.route('/proyectos', methods=['DELETE'])
+def delete_all_proyectos():
+    try:
+        # Borrar todos los proyectos
+        db.session.query(Proyecto).delete()
+        db.session.commit()
+        return jsonify({'message': 'Todos los proyectos han sido borrados'}), 200
+    except Exception as e:
+        # En caso de error, hacer rollback y devolver un mensaje de error
+        db.session.rollback()
+        return jsonify({'message': 'Error al borrar los proyectos', 'error': str(e)}), 500
+
+
 
 #Dashboard
 @app.route('/dashboard', methods=['GET'])
@@ -288,6 +310,29 @@ def dashboard():
         return jsonify(message='User not found'), 404
 
     return jsonify(message=user.serialize())
+
+@app.route('/user/<int:user_id>/projects', methods=['GET'])
+def get_user_projects(user_id):
+    # Buscar el usuario en la base de datos
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({'message': 'El usuario no existe'}), 404
+
+    # Obtener los proyectos asociados al usuario
+    projects = user.proyectos
+
+    # Serializar los proyectos en formato JSON
+    serialized_projects = []
+    for project in projects:
+        serialized_project = {
+            'id': project.id,
+            'name': project.name,
+            'direction': project.direction
+        }
+        serialized_projects.append(serialized_project)
+
+    return jsonify(serialized_projects), 200
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
