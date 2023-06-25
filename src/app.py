@@ -90,7 +90,10 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0 # avoid cache memory
     return response
 
+
+#Get de USERS
 @app.route('/user', methods=['GET'])
+
 
 def handle_hello():
 
@@ -147,6 +150,8 @@ def create_user():
 
     return jsonify(aut_token = aut_token)
 
+
+#LOGIN
 @app.route('/login', methods=['POST'])
 def handle_login():
 
@@ -164,6 +169,7 @@ def handle_login():
        return jsonify(message='Wrong credentials'), 401
 
    
+#POST de MUESTRA
 @app.route('/muestra', methods=['POST'])
 def create_muestra():
     data = request.json
@@ -205,6 +211,17 @@ def delete_muestra(muestra_id):
     return jsonify({'message': 'Muestra eliminada correctamente'})
 
 
+#Delete USERS
+@app.route('/users', methods=['DELETE'])
+def delete_all_users():
+    # Eliminar todos los registros de la tabla User
+    User.query.delete()
+    db.session.commit()
+    
+    return jsonify({'message': 'All users deleted'}), 200
+
+
+#Dashboard
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
     auth_header = request.headers.get('Authorization')

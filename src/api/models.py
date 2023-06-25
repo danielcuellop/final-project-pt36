@@ -40,7 +40,8 @@ class Muestra(db.Model):
     image_specimen= db.Column(db.String(80), unique=False, nullable=False)
     aditional_comments = db.Column(db.String(90), unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
+    proyecto_id = db.Column(db.Integer, db.ForeignKey('proyecto.id'), nullable=False)
+    
     def serialize(self):
         return {
             "id" : self.id,
@@ -53,3 +54,18 @@ class Muestra(db.Model):
             "image_specimen": self.image_specimen,
             "aditional_comments": self.aditional_comments
     }
+class Proyecto(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=False, nullable=False)
+    direccion = db.Column(db.String(120), unique=False, nullable=False)
+    muestras = db.relationship('Muestra', backref='proyecto', lazy=True)
+
+    def __repr__(self):
+        return '<Proyecto %r>' % self.name
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "direccion": self.direccion
+        }
